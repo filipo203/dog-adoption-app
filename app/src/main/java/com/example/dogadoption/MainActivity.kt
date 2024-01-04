@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,11 +23,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,6 +49,7 @@ import com.example.dogadoption.ui.theme.DogAdoptionTheme
 import com.example.dogadoption.ui.theme.ImageCard
 import com.example.dogadoption.ui.theme.LoadImageFromURL
 import com.example.dogadoption.ui.theme.LoadImageFromURL2
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +69,7 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Description("Description")
+
                         val painter = painterResource(id = R.drawable.schnauzer)
                         val contentDescription = "Miko - Schnauzer"
                         val title = "Miko - Schnauzer"
@@ -84,6 +89,7 @@ class MainActivity : ComponentActivity() {
                             title = title
                         )
                         ContactMeButton()
+                        Spacer(modifier = Modifier.padding(8.dp))
 
                     }
                     Surface(
@@ -133,6 +139,20 @@ fun Description(
 
 @Composable
 fun ContactMeButton() {
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+    val coroutineScope = rememberCoroutineScope()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { coroutineScope.launch{
+            val snackbarResult = snackbarHostState.showSnackbar(
+                message = "Email sent"
+            )
+        } }
+    )
+
     val senderEmail = remember {
         mutableStateOf("29filip@gmail.com")
     }
@@ -143,18 +163,20 @@ fun ContactMeButton() {
 
     Button(onClick = {
         val i = Intent(Intent.ACTION_SEND)
-            val emailAddress = arrayOf(senderEmail.value)
-            i.putExtra(Intent.EXTRA_EMAIL,emailAddress)
-            i.putExtra(Intent.EXTRA_SUBJECT,emailSubject.value)
+        val emailAddress = arrayOf(senderEmail.value)
+        i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+        i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
 
+        i.setType("message/rfc822")
 
-            i.setType("message/rfc822")
-
-            ctx.startActivity(Intent.createChooser(i,"Choose an Email client : ")) } ) {
-            Text(text = "Contact me",
-                color = Color.White,
-                fontSize = 18.sp)
-        }
+        ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
+    }) {
+        Text(
+            text = "Contact me",
+            color = Color.White,
+            fontSize = 18.sp
+        )
+    }
 }
 
 /*
@@ -173,13 +195,3 @@ private fun ContactMeButton() {
     })
 }
 */
-
-//@Composable
-//fun NetworkImage(
-// Image address
-// https://images.unsplash.com/photo-1543466835-00a7907e9de1
-// https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aGFwcHklMjBkb2d8ZW58MHx8MHx8fDA%3D
-// https://media-be.chewy.com/wp-content/uploads/2021/06/01193739/irish-wolfhound-puppy-garden-1024x615.jpg
-// ) {
-//
-//}
