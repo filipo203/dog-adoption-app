@@ -1,5 +1,6 @@
 package com.example.dogadoption
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -7,8 +8,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,13 +19,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,6 +61,8 @@ import com.example.dogadoption.ui.theme.LoadImageFromURL2
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -62,12 +73,14 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Header("Dog Adoption")
+
                     Column(
                         modifier = Modifier
                             .verticalScroll(state = rememberScrollState())
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         Description("Description")
 
                         val painter = painterResource(id = R.drawable.schnauzer)
@@ -89,21 +102,15 @@ class MainActivity : ComponentActivity() {
                             title = title
                         )
                         ContactMeButton()
-                        Spacer(modifier = Modifier.padding(8.dp))
+                        // Spacer(modifier = Modifier.padding(8.dp))
 
                     }
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
 
-                    }
                 }
+
             }
         }
     }
-
-
 }
 
 @Composable
@@ -137,21 +144,10 @@ fun Description(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactMeButton() {
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-    val coroutineScope = rememberCoroutineScope()
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { coroutineScope.launch{
-            val snackbarResult = snackbarHostState.showSnackbar(
-                message = "Email sent"
-            )
-        } }
-    )
+fun ContactMeButton(modifier: Modifier = Modifier) {
 
     val senderEmail = remember {
         mutableStateOf("29filip@gmail.com")
@@ -161,37 +157,36 @@ fun ContactMeButton() {
     }
     val ctx = LocalContext.current
 
-    Button(onClick = {
-        val i = Intent(Intent.ACTION_SEND)
-        val emailAddress = arrayOf(senderEmail.value)
-        i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
-        i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
 
-        i.setType("message/rfc822")
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        content = {
+            Button(onClick = {
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = "Email Sent")
+                }
 
-        ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
-    }) {
-        Text(
-            text = "Contact me",
-            color = Color.White,
-            fontSize = 18.sp
-        )
-    }
-}
+                val i = Intent(Intent.ACTION_SEND)
+                val emailAddress = arrayOf(senderEmail.value)
+                i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+                i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
 
-/*
-@Composable
-private fun ContactMeButton() {
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { }
-    )
-    Button(onClick = {
-        val intent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_APP_EMAIL)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                i.setType("message/rfc822")
+
+                ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
+            }) {
+                Text(
+                    text = "Contact me",
+                    color = Color.White,
+                    fontSize = 18.sp
+                )
+            }
         }
-        launcher.launch(intent)
-    })
+    )
 }
-*/
+
