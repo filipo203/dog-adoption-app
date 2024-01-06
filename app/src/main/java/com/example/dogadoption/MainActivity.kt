@@ -62,131 +62,139 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+    @SuppressLint(
+        "UnusedMaterialScaffoldPaddingParameter",
+        "UnusedMaterial3ScaffoldPaddingParameter"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DogAdoptionTheme {
-                Column(
+                val snackbarHostState = remember { SnackbarHostState() }
+                val scope = rememberCoroutineScope()
+                Scaffold(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Header("Dog Adoption")
+                        .fillMaxSize(),
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Header("Dog Adoption")
+                            Column(
+                                modifier = Modifier
+                                    .verticalScroll(state = rememberScrollState())
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Description("Description")
 
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(state = rememberScrollState())
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                                val painter = painterResource(id = R.drawable.schnauzer)
+                                val contentDescription = "Miko - Schnauzer"
+                                val title = "Miko - Schnauzer"
+                                ImageCard(
+                                    painter = painter,
+                                    contentDescription = contentDescription,
+                                    title = title
+                                )
+                                LoadImageFromURL(
+                                    painter = painter,
+                                    contentDescription = contentDescription,
+                                    title = title
+                                )
+                                LoadImageFromURL2(
+                                    painter = painter,
+                                    contentDescription = contentDescription,
+                                    title = title
+                                )
+                                ContactMeButton()
+                                Spacer(modifier = Modifier.padding(8.dp))
 
-                        Description("Description")
+                            }
 
-                        val painter = painterResource(id = R.drawable.schnauzer)
-                        val contentDescription = "Miko - Schnauzer"
-                        val title = "Miko - Schnauzer"
-                        ImageCard(
-                            painter = painter,
-                            contentDescription = contentDescription,
-                            title = title
-                        )
-                        LoadImageFromURL(
-                            painter = painter,
-                            contentDescription = contentDescription,
-                            title = title
-                        )
-                        LoadImageFromURL2(
-                            painter = painter,
-                            contentDescription = contentDescription,
-                            title = title
-                        )
-                        ContactMeButton()
-                        // Spacer(modifier = Modifier.padding(8.dp))
+                        }
 
-                    }
-
-                }
-
+                    })
             }
         }
     }
-}
 
-@Composable
-private fun Header(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "Dog Adoption",
-        fontSize = 36.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(16.dp)
-    )
-}
-
-@Composable
-fun Description(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "Adopt your new best friend!",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        modifier = modifier
-            .padding(2.dp)
-    )
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ContactMeButton(modifier: Modifier = Modifier) {
-
-    val senderEmail = remember {
-        mutableStateOf("29filip@gmail.com")
+    @Composable
+    private fun Header(
+        name: String,
+        modifier: Modifier = Modifier
+    ) {
+        Text(
+            text = "Dog Adoption",
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(16.dp)
+        )
     }
-    val emailSubject = remember {
-        mutableStateOf("Dog Adoption: Request")
+
+    @Composable
+    fun Description(
+        name: String,
+        modifier: Modifier = Modifier
+    ) {
+        Text(
+            text = "Adopt your new best friend!",
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .padding(2.dp)
+        )
     }
-    val ctx = LocalContext.current
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ContactMeButton(modifier: Modifier = Modifier) {
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    Scaffold(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        content = {
-            Button(onClick = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(message = "Email Sent")
-                }
-
-                val i = Intent(Intent.ACTION_SEND)
-                val emailAddress = arrayOf(senderEmail.value)
-                i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
-                i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
-
-                i.setType("message/rfc822")
-
-                ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
-            }) {
-                Text(
-                    text = "Contact me",
-                    color = Color.White,
-                    fontSize = 18.sp
-                )
-            }
+        val senderEmail = remember {
+            mutableStateOf("29filip@gmail.com")
         }
-    )
+        val emailSubject = remember {
+            mutableStateOf("Dog Adoption: Request")
+        }
+        val ctx = LocalContext.current
+
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
+//    "What I tried before"
+//    Scaffold(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(80.dp),
+//        snackbarHost = { SnackbarHost(snackbarHostState) },
+//        content = {
+        Button(onClick = {
+            scope.launch {
+                snackbarHostState.showSnackbar(message = "Email Sent")
+            }
+
+            val i = Intent(Intent.ACTION_SEND)
+            val emailAddress = arrayOf(senderEmail.value)
+            i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+            i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
+
+            i.setType("message/rfc822")
+
+            ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
+        }) {
+            Text(
+                text = "Contact me",
+                color = Color.White,
+                fontSize = 18.sp
+            )
+        }
+     }
+// }
 }
 
