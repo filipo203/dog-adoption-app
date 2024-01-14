@@ -2,13 +2,20 @@ package com.example.dogadoption
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentSender
+import android.graphics.Bitmap
+import android.graphics.ColorSpace.Model
 import android.icu.text.CaseMap.Title
 import android.os.Bundle
+import android.provider.CalendarContract.Colors
 import android.widget.Button
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,10 +32,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material3.AlertDialogDefaults.titleContentColor
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,13 +46,18 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.internal.composableLambda
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -55,21 +70,27 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.dogadoption.ui.theme.DogAdoptionTheme
 import com.example.dogadoption.ui.theme.ImageCard
 import com.example.dogadoption.ui.theme.LoadImageFromURL
 import com.example.dogadoption.ui.theme.LoadImageFromURL2
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint(
         "UnusedMaterialScaffoldPaddingParameter",
-        "UnusedMaterial3ScaffoldPaddingParameter"
+        "UnusedMaterial3ScaffoldPaddingParameter",
+        "UnrememberedMutableState"
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,90 +105,95 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf("Dog Adoption: Request")
             }
             val ctx = LocalContext.current
+
+            val result = { "" }
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
+            ) { scope.launch { snackbarHostState.showSnackbar("Email sent") } }
+
             DogAdoptionTheme {
                 Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(snackbarHostState) },
+                    topBar = {
+                        CenterAlignedTopAppBar(
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            title = {
+                                Text(
+                                    "Dog Adoption",
+                                    maxLines = 1,
+                                    fontSize = 36.sp,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            })
+                    }
                 ) {
-                    Box {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Header("Dog Adoption")
-                            Column(
-                                modifier = Modifier
-                                    .verticalScroll(state = rememberScrollState())
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Description("Description")
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(state = rememberScrollState())
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.padding(34.dp))
+                        Description("Description")
 
-                                val painter = painterResource(id = R.drawable.schnauzer)
-                                val contentDescription = "Miko - Schnauzer"
-                                val title = "Miko - Schnauzer"
-                                ImageCard(
-                                    painter = painter,
-                                    contentDescription = contentDescription,
-                                    title = title
-                                )
-                                LoadImageFromURL(
-                                    painter = painter,
-                                    contentDescription = contentDescription,
-                                    title = title
-                                )
-                                LoadImageFromURL2(
-                                    painter = painter,
-                                    contentDescription = contentDescription,
-                                    title = title
-                                )
-                                Button(onClick = { scope.launch {
-                                    snackbarHostState.showSnackbar(message = "Email Sent")
-                                }
-                                    val i = Intent(Intent.ACTION_SEND)
-                                    val emailAddress = arrayOf(senderEmail.value)
-                                    i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
-                                    i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
+                        val painter = painterResource(id = R.drawable.schnauzer)
+                        val contentDescription = "Miko - Schnauzer"
+                        val title = "Miko - Schnauzer"
 
-                                    i.setType("message/rfc822")
+                        ImageCard(
+                            painter = painter,
+                            contentDescription = contentDescription,
+                            title = title
+                        )
+                        LoadImageFromURL(
+                            painter = painter,
+                            contentDescription = contentDescription,
+                            title = title
+                        )
+                        LoadImageFromURL2(
+                            painter = painter,
+                            contentDescription = contentDescription,
+                            title = title
+                        )
 
-                                    ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
-                                }) {
-                                    Text(
-                                        text = "Contact me",
-                                        color = Color.White,
-                                        fontSize = 18.sp
-                                    )}
-                                //ContactMeButton()
-                                Spacer(modifier = Modifier.padding(8.dp))
-                            }
+                        Button(onClick = {
+                            val i = Intent(Intent.ACTION_SEND)
+                            val emailAddress = arrayOf(senderEmail.value)
+                            i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+                            i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
+
+                            i.setType("message/rfc822")
+
+                            /* TODO: "Handle send email result and show snackbar message" */
+                            //launcher.launch()
+                            //scope.launch { snackbarHostState.showSnackbar("Email sent") }
+
+                            ctx.startActivity(
+                                Intent.createChooser(
+                                    i, "Choose an Email client : "
+                                )
+                            )
+
+                        })
+                        {
+                            Text(
+                                text = "Contact me",
+                                color = Color.White,
+                                fontSize = 18.sp
+                            )
                         }
 
+                        Spacer(modifier = Modifier.padding(8.dp))
                     }
                 }
             }
         }
     }
-}
-
-
-@Composable
-private fun Header(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "Dog Adoption",
-        fontSize = 36.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(16.dp)
-    )
 }
 
 @Composable
@@ -180,52 +206,6 @@ fun Description(
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         modifier = modifier
-            .padding(2.dp)
+            .padding(4.dp)
     )
 }
-
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun ContactMeButton(modifier: Modifier = Modifier) {
-//
-//    val senderEmail = remember {
-//        mutableStateOf("29filip@gmail.com")
-//    }
-//    val emailSubject = remember {
-//        mutableStateOf("Dog Adoption: Request")
-//    }
-//    val ctx = LocalContext.current
-//
-//    val snackbarHostState = remember { SnackbarHostState() }
-//    val scope = rememberCoroutineScope()
-////    "What I tried before"
-////    Scaffold(
-////        modifier = Modifier
-////            .fillMaxWidth()
-////            .height(80.dp),
-////        snackbarHost = { SnackbarHost(snackbarHostState) },
-////        content = {
-//    Button(onClick = {
-//        scope.launch {
-//            snackbarHostState.showSnackbar(message = "Email Sent")
-//        }
-//        val i = Intent(Intent.ACTION_SEND)
-//        val emailAddress = arrayOf(senderEmail.value)
-//        i.putExtra(Intent.EXTRA_EMAIL, emailAddress)
-//        i.putExtra(Intent.EXTRA_SUBJECT, emailSubject.value)
-//
-//        i.setType("message/rfc822")
-//
-//        ctx.startActivity(Intent.createChooser(i, "Choose an Email client : "))
-//    }) {
-//        Text(
-//            text = "Contact me",
-//            color = Color.White,
-//            fontSize = 18.sp
-//        )
-//    }
-//}
-//// }
-
-
