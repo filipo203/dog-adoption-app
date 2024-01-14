@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(modifier = Modifier.padding(34.dp))
-                        Description("Description")
+                        Description("Description") // FIXME: Zrob tak zeby to pochodzilo z resources
 
                         val painter = painterResource(id = R.drawable.schnauzer)
 
@@ -207,7 +207,7 @@ class MainActivity : ComponentActivity() {
                         })
                         {
                             Text(
-                                text = "Contact me",
+                                text = "Contact me", // FIXME: Zrob tak zeby to pochodzilo z resources
                                 color = Color.White,
                                 fontSize = 18.sp
                             )
