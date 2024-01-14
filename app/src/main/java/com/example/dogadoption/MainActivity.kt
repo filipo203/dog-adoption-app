@@ -98,11 +98,15 @@ class MainActivity : ComponentActivity() {
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
 
+            /**
+             * `senderEmail` i `emailSubject` moga byc `const val` bo sie nigdy nie zmieniaja.
+             * https://www.baeldung.com/kotlin/constants-best-practices
+             */
             val senderEmail = remember {
                 mutableStateOf("29filip@gmail.com")
             }
             val emailSubject = remember {
-                mutableStateOf("Dog Adoption: Request")
+                mutableStateOf("Dog Adoption: Request") // FIXME: Zrob tak zeby to pochodzilo z resources
             }
             val ctx = LocalContext.current
 
@@ -207,7 +211,9 @@ class MainActivity : ComponentActivity() {
                         })
                         {
                             Text(
-                                text = "Contact me", // FIXME: Zrob tak zeby to pochodzilo z resources
+                                // FIXME: Zrob tak zeby to pochodzilo z resources
+                                // https://www.youtube.com/watch?v=7urBtGbF1-M&ab_channel=Kodeco
+                                text = "Contact me",
                                 color = Color.White,
                                 fontSize = 18.sp
                             )
