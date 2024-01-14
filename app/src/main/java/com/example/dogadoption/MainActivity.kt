@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint(
         "UnusedMaterialScaffoldPaddingParameter",
         "UnusedMaterial3ScaffoldPaddingParameter",
-        "UnrememberedMutableState"
+        "UnrememberedMutableState" // To juz chyba nie jest potrzebne
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,10 +106,19 @@ class MainActivity : ComponentActivity() {
             }
             val ctx = LocalContext.current
 
+            // FIXME: `result` nie urzywany
             val result = { "" }
             val launcher = rememberLauncherForActivityResult(
                 ActivityResultContracts.StartIntentSenderForResult()
-            ) { scope.launch { snackbarHostState.showSnackbar("Email sent") } }
+            ) {
+                /**
+                 * Z tego co widze to jak wysyla sie email to result jest "0" co oznacza
+                 * ze wysylanie bylo zcancelowane przez urzytkownika albo email app nie zwraca
+                 * zadnego result. Wiec jak dostaniemy result mozemy pokazac snackbar z message
+                 * "Email intent completed"
+                 * TODO: zmienic message na "Email intent completed"
+                 */
+                scope.launch { snackbarHostState.showSnackbar("Email sent") } }
 
             DogAdoptionTheme {
                 Scaffold(
@@ -123,7 +132,7 @@ class MainActivity : ComponentActivity() {
                             ),
                             title = {
                                 Text(
-                                    "Dog Adoption",
+                                    "Dog Adoption", // FIXME: Zrob tak zeby to pochodzilo z resources
                                     maxLines = 1,
                                     fontSize = 36.sp,
                                     overflow = TextOverflow.Ellipsis,
@@ -142,8 +151,13 @@ class MainActivity : ComponentActivity() {
                         Description("Description")
 
                         val painter = painterResource(id = R.drawable.schnauzer)
+
+                        /**
+                         * Zamiast tworzyc `contentDescription` mozesz uzyc `title`
+                         * jako `contentDescription`
+                         */
                         val contentDescription = "Miko - Schnauzer"
-                        val title = "Miko - Schnauzer"
+                        val title = "Miko - Schnauzer" // FIXME: Zrob tak zeby to pochodzilo z resources
 
                         ImageCard(
                             painter = painter,
@@ -169,10 +183,21 @@ class MainActivity : ComponentActivity() {
 
                             i.setType("message/rfc822")
 
-                            /* TODO: "Handle send email result and show snackbar message" */
+                            /**
+                             * FIXME: w dalszym ciagu chcemy uzywac `launcher.launch()` z tym ze
+                             * wymaga on zeby podac mu powyzszy `Intent` a nie `IntentSenderRequest`
+                             * Mozesz podac w launch:
+                             * `val chooser = Intent.createChooser(i, "Choose an Email client : ")`
+                             */
+
                             //launcher.launch()
+
+                            // To nie bedzie juz nam potrzebne
                             //scope.launch { snackbarHostState.showSnackbar("Email sent") }
 
+
+                            // I to tez nie bedzie potrzebne. I jak to usuniesz to na gorze jest
+                            // `val ctx = LocalContext.current` ktory tez nie bedzie potrzebny
                             ctx.startActivity(
                                 Intent.createChooser(
                                     i, "Choose an Email client : "
@@ -198,11 +223,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Description(
-    name: String,
+    name: String, // FIXME: Nie urzywane
     modifier: Modifier = Modifier
 ) {
     Text(
-        text = "Adopt your new best friend!",
+        text = "Adopt your new best friend!",  // FIXME: Zrob tak zeby to pochodzilo z resources
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         modifier = modifier
