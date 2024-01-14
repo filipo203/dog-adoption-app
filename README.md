@@ -1,7 +1,7 @@
 # Dog Adoption App Project
 ## A work in progress of my first app
 
-This project presents my skills as a developer by meeting these requirements:
+This project presents my skills as a junior developer by meeting these requirements:
 - building scrollable ui
 - using local resources
 - using network images
