@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Dog Adoption</string>
+    <string name="description">Adopt your new best friend!</string>
+    <string name="dog1">Miko - Schnauzer</string>
+    <string name="dog2">Peggie - Golden Retriever</string>
+    <string name="dog3">Rufus - Irish Wolfhound</string>
+    <string name="email">29filip@gmail.com</string>
+    <string name="email_subject">Dog Adoption: Request</string>
+    <string name="button">Contact me</string>
 </resources>

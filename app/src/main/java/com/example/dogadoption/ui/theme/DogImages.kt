@@ -18,15 +18,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.dogadoption.R
+
 
 @Composable
 fun ImageCard(
-    painter: Painter, contentDescription: String, title: String, modifier: Modifier = Modifier
+    painter: Painter, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
@@ -39,8 +43,8 @@ fun ImageCard(
     ) {
         Box(modifier = Modifier.height(200.dp)) {
             Image(
-                painter = painter,
-                contentDescription = contentDescription,
+                painter,
+                contentDescription = null,
                 Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillWidth
             )
@@ -64,8 +68,10 @@ fun ImageCard(
                     .padding(12.dp),
                 contentAlignment = Alignment.BottomStart
             ) {
+
                 Text(
-                    text = title, style = TextStyle(
+                    stringResource(R.string.dog1),
+                    style = TextStyle(
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -77,9 +83,8 @@ fun ImageCard(
 }
 
 @Composable
-fun LoadImageFromURL(
-    painter: Painter, contentDescription: String, title: String, modifier: Modifier = Modifier
-) {
+fun LoadImageFromURL(modifier: Modifier = Modifier)
+{
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -91,8 +96,8 @@ fun LoadImageFromURL(
     ) {
         Box(modifier = Modifier.height(200.dp)) {
             Image(
-                painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1543466835-00a7907e9de1"),
-                contentDescription = "Dog2",
+                rememberAsyncImagePainter("https://images.unsplash.com/photo-1543466835-00a7907e9de1"),
+                contentDescription = null,
                 Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -117,7 +122,7 @@ fun LoadImageFromURL(
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
-                    text = "Peggie - Golden Retriever", style = TextStyle(
+                    stringResource(R.string.dog2), style = TextStyle(
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -129,9 +134,8 @@ fun LoadImageFromURL(
 }
 
 @Composable
-fun LoadImageFromURL2(
-    painter: Painter, contentDescription: String, title: String, modifier: Modifier = Modifier
-) {
+fun LoadImageFromURL2(modifier: Modifier = Modifier)
+{
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,8 +147,8 @@ fun LoadImageFromURL2(
     ) {
         Box(modifier = Modifier.height(200.dp)) {
             Image(
-                painter = rememberAsyncImagePainter("https://media-be.chewy.com/wp-content/uploads/2021/06/01193739/irish-wolfhound-puppy-garden-1024x615.jpg"),
-                contentDescription = "Dog2",
+                rememberAsyncImagePainter("https://media-be.chewy.com/wp-content/uploads/2021/06/01193739/irish-wolfhound-puppy-garden-1024x615.jpg"),
+                contentDescription = null,
                 Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -169,7 +173,7 @@ fun LoadImageFromURL2(
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
-                    text = "Rufus - Irish Wolfhound", style = TextStyle(
+                    stringResource(R.string.dog3), style = TextStyle(
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
