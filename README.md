@@ -11,5 +11,5 @@ This version of the app displays my skills within Jetpack Compose:
 - Lazy lists
 - Common ui element TopBar
 
-##Screenshots
+## Screenshots
 [Available soon]
