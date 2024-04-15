@@ -1,6 +1,5 @@
 # Dog Adoption App Project
 ## A work in progress of my first app
-(Needs Testing)
 
 This version of the app displays my skills within Jetpack Compose:
 - Jetpack Compose Navigation
