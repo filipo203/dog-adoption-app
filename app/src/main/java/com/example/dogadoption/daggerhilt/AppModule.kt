@@ -1,6 +1,5 @@
 package com.example.dogadoption.daggerhilt
 
-import android.app.Application
 import com.example.dogadoption.repository.DogRepository
 import com.example.dogadoption.retrofit.DogApi
 import dagger.Module
@@ -31,8 +30,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDogRepository(dogApi: DogApi, app: Application): DogRepository {
-        return DogRepository(dogApi, app)
+    fun provideDogRepository(dogApi: DogApi): DogRepository {
+        return DogRepository(dogApi)
     }
 }
 
