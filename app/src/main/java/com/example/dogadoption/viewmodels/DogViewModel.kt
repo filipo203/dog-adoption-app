@@ -35,27 +35,5 @@ class DogViewModel @Inject constructor(
                     Log.e(ContentValues.TAG, "DOG_VIEW_MODEL: Error fetching dog breed names")
                 }
         }
-            /*
-            try {
-                val breeds = dogRepository.getDogBreeds()
-                _dogBreeds.postValue(breeds)
-            } catch (e: Exception) {
-                Log.e(ContentValues.TAG, "Error fetching dog breed names")
-            }
-        }
-
-             */
     }
-
-    /*
-    private val _dogBreeds = MutableLiveData<List<String>>()
-    val dogBreeds: LiveData<List<String>> get() = _dogBreeds
-
-    fun fetchDogBreeds() {
-        viewModelScope.launch() {
-            _dogBreeds.value = dogRepository.getDogBreeds()
-        }
-    }
-
-     */
 }

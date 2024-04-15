@@ -34,4 +34,3 @@ object AppModule {
         return DogRepository(dogApi)
     }
 }
-

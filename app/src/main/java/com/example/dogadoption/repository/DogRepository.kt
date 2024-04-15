@@ -3,7 +3,6 @@ package com.example.dogadoption.repository
 import android.content.ContentValues
 import android.util.Log
 import com.example.dogadoption.retrofit.DogApi
-import com.example.dogadoption.retrofit.DogNames
 import com.example.dogadoption.retrofit.DogPictures
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,31 +41,4 @@ class DogRepository @Inject constructor(
             throw Exception("API call failed with code: ${response.code()}")
         }
     }
-
-    /*runCatching {
-        val response = dogApi.getDogPictures(breed)
-        if (response.isFailure) error("Failed to fetch dog pictures: ${response.message()}")
-
-        val body = response.body() ?: error("Missing body")
-        body.message.map { it.url }
-    }
 }
-
-     */
-}
-
-
-
-/*try {
-                val response = dogApi.getDogPictures(breed)
-                if (response.isSuccessful) {
-                    val images = response.body()?.message ?: emptyList()
-                    images.map { it.url }
-                } else {
-                    throw Exception()
-                }
-            } catch (e: Exception) {
-                emptyList()
-            }
-             */
-

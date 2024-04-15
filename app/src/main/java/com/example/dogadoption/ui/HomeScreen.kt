@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogadoption.R
 
-
 @Composable
 fun HomeScreen(navController: NavController) {
     Column(
