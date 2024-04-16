@@ -11,7 +11,9 @@ This version of the app displays my skills within Jetpack Compose:
 - Common ui element TopBar
 
 ## Screenshots
+
 ![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-2/screenshots/Screenshot_20240415_205726.png)
 ![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-2/screenshots/Screenshot_20240415_205750.png)
 ![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-2/screenshots/Screenshot_20240415_205834.png)
 ![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-2/screenshots/Screenshot_20240415_205851.png)
+=======
