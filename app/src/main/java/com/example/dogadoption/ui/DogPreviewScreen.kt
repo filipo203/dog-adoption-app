@@ -31,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import com.example.dogadoption.R
 import com.example.dogadoption.viewmodels.DogPicsViewModel
+import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -66,7 +65,9 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, 
                 ),
                 title = {
                     Text(
-                        stringResource(R.string.app_name),
+                        breed.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(Locale.ROOT)
+                            else it.toString() },
                         maxLines = 1,
                         fontSize = 28.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -91,24 +92,15 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, 
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(66.dp))
-            Text(
-                text = "Breed: $breed",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-            // Observe dogPicturesLiveData from the ViewModel
+            Spacer(Modifier.height(66.dp))
             val dogPictures by viewModel.dogPicturesLiveData.observeAsState(emptyList())
-            //val error by viewModel.errorLiveData.observeAsState("")
 
             if (dogPictures.isNotEmpty()) {
                 if (index in dogPictures.indices) {
                     DogPicture(imageUrl = dogPictures[index])
                 } else {
-                    Text(text = "Invalid index: $index")
+                    Text("Invalid index: $index")
                 }
-                //DogPicture(imageUrl = dogPictures.getOrNull(selectedIndex) ?: "")
             }
             Button(onClick = { /* TODO Handle adopt button click */ }) {
                 Text("Adopt")
@@ -120,12 +112,12 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, 
 @Composable
 fun DogPicture(imageUrl: String) {
     val painter = rememberAsyncImagePainter(imageUrl)
-    Box(modifier = Modifier) {
+    Box(Modifier) {
         Image(
-            painter = painter,
+            painter,
             contentDescription = null,
             modifier = Modifier
-                .size(250.dp)
+                .size(400.dp)
                 .padding(2.dp)
         )
         if (painter.state is AsyncImagePainter.State.Loading) {

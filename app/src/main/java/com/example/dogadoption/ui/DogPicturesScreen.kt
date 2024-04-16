@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.dogadoption.viewmodels.DogPicsViewModel
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +69,10 @@ fun DogPicturesScreen(
                 ),
                 title = {
                     Text(
-                        stringResource(com.example.dogadoption.R.string.app_name),
+                        breed.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(Locale.ROOT)
+                            else it.toString()
+                        },
                         maxLines = 1,
                         fontSize = 28.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -89,7 +93,6 @@ fun DogPicturesScreen(
     ) {
         when (val result = dogPicturesState) {
             is List -> {
-                val state = rememberLazyListState()
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     modifier = Modifier
@@ -100,7 +103,6 @@ fun DogPicturesScreen(
                     itemsIndexed(result) { index, imageUrl ->
                         DogPictureItem(imageUrl) {
                             navController.navigate(
-                                //"${Screen.PrevScreen.route}"
                                 "DogPreview/{breed}/{selectedImageUrl}/${index}"
                             )
                         }
@@ -112,7 +114,7 @@ fun DogPicturesScreen(
                 Text(text = "Loading images...")
             }
         }
-        errorState?.let { errorMessage ->
+        errorState?.let {
             Text(
                 "Sorry, there's no pictures available for $breed.",
                 fontSize = 24.sp,
@@ -126,12 +128,12 @@ fun DogPicturesScreen(
 @Composable
 fun DogPictureItem(imageUrl: String, onClick: (String) -> Unit) {
     val painter = rememberAsyncImagePainter(model = imageUrl)
-    Box(modifier = Modifier.clickable {
-        Log.e(ContentValues.TAG, "DogPictureItem: Clicked image URL: ${imageUrl}")
+    Box(Modifier.clickable {
+        Log.e(ContentValues.TAG, "DogPictureItem: Clicked image URL: $imageUrl")
         onClick.invoke(imageUrl)
     }) {
         Image(
-            painter = painter,
+            painter,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()

@@ -26,15 +26,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.dogadoption.R
 import com.example.dogadoption.viewmodels.DogViewModel
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +56,7 @@ fun DogListScreen(navController: NavController, viewModel: DogViewModel) {
                 ),
                 title = {
                     Text(
-                        stringResource(R.string.app_name),
+                        text = "Dogs List",
                         maxLines = 1,
                         fontSize = 28.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -90,7 +89,9 @@ fun DogListScreen(navController: NavController, viewModel: DogViewModel) {
                         .clickable { navController.navigate("DogPicsScreen/$breed") }
                 ) {
                     Text(
-                        breed,
+                        breed.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(Locale.ROOT)
+                            else it.toString() },
                         Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
