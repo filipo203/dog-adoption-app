@@ -4,7 +4,7 @@ A work in progress of my first app
 A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the app. This app displays my skills within Jetpack Compose throughout each stage of development:
 
 ## Stage 3 - In progress 🚀
-- MIlestones in issues tab
+- Milestones in issues tab
 
 ## Stage 2 - Completed ✅
 - Jetpack Compose Navigation
