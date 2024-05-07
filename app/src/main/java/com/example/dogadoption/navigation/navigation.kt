@@ -8,11 +8,10 @@ import com.example.dogadoption.ui.DogListScreen
 import com.example.dogadoption.ui.DogPicturesScreen
 import com.example.dogadoption.ui.DogPreviewScreen
 import com.example.dogadoption.ui.HomeScreen
-import com.example.dogadoption.viewmodels.DogPicsViewModel
 import com.example.dogadoption.viewmodels.DogViewModel
 
 @Composable
-fun Navigation(navController: NavHostController, dogViewModel: DogViewModel, dogPicsViewModel: DogPicsViewModel) {
+fun Navigation(navController: NavHostController, dogViewModel: DogViewModel) {
     NavHost(navController, startDestination = Screen.HomeScreen.route) {
         composable(Screen.HomeScreen.route) {
             HomeScreen(navController)
@@ -22,11 +21,11 @@ fun Navigation(navController: NavHostController, dogViewModel: DogViewModel, dog
         }
         composable(Screen.PicsScreen.route) {backStackEntry ->
             val breed = backStackEntry.arguments?.getString("breed") ?: ""
-            DogPicturesScreen(navController, dogPicsViewModel, breed)
+            DogPicturesScreen(navController, dogViewModel, breed)
         }
         composable(Screen.PrevScreen.route) {backStackEntry ->
             val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
-            DogPreviewScreen(navController, dogPicsViewModel, index)
+            DogPreviewScreen(navController, dogViewModel, index)
         }
 
     }

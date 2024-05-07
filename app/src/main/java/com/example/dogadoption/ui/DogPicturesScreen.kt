@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import com.example.dogadoption.viewmodels.DogPicsViewModel
+import com.example.dogadoption.viewmodels.DogViewModel
 import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -48,15 +46,15 @@ import java.util.Locale
 @Composable
 fun DogPicturesScreen(
     navController: NavController,
-    viewModel: DogPicsViewModel,
+    viewModel: DogViewModel,
     breed: String
 ) {
-    val dogPicturesState by viewModel.dogPicturesLiveData.observeAsState()
-    val errorState by viewModel.errorLiveData.observeAsState()
+    val dogImage by viewModel.dogImages.observeAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(breed) {
         Log.d(ContentValues.TAG, "Fetching dog pictures for breed: $breed")
-        viewModel.fetchDogPictures(breed)
+        viewModel.getDogImages(breed)
+        viewModel.fetchAndSaveDogPictures(breed)
     }
 
     Scaffold(
@@ -91,8 +89,12 @@ fun DogPicturesScreen(
             )
         }
     ) {
-        when (val result = dogPicturesState) {
-            is List -> {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            if (dogImage != null && dogImage!!.isNotEmpty()) {
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     modifier = Modifier
@@ -100,7 +102,7 @@ fun DogPicturesScreen(
                         .padding(top = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(result) { index, imageUrl ->
+                    itemsIndexed(dogImage!!) { index, imageUrl ->
                         DogPictureItem(imageUrl) {
                             navController.navigate(
                                 "DogPreview/{breed}/{selectedImageUrl}/${index}"
@@ -108,19 +110,10 @@ fun DogPicturesScreen(
                         }
                     }
                 }
+            } else {
+                Text(text = "Downloading images...")
+                CircularProgressIndicator()
             }
-
-            else -> {
-                Text(text = "Loading images...")
-            }
-        }
-        errorState?.let {
-            Text(
-                "Sorry, there's no pictures available for $breed.",
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                lineHeight = 28.sp
-            )
         }
     }
 }
@@ -141,8 +134,8 @@ fun DogPictureItem(imageUrl: String, onClick: (String) -> Unit) {
                 .padding(2.dp)
         )
         if (painter.state is AsyncImagePainter.State.Loading) {
+            Text(text = "Fetching image")
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
-
 }

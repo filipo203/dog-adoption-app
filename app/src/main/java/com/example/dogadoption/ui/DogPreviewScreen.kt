@@ -39,20 +39,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import com.example.dogadoption.viewmodels.DogPicsViewModel
+import com.example.dogadoption.viewmodels.DogViewModel
 import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, index: Int) {
+fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, index: Int) {
 
     val breed = navController.previousBackStackEntry?.arguments?.getString("breed") ?: ""
 
     LaunchedEffect(Unit) {
         Log.d(ContentValues.TAG, "Fetching dog pictures for breed: $breed")
-        viewModel.fetchDogPictures(breed)
+        viewModel.getDogImages(breed)
     }
 
     Scaffold(
@@ -93,7 +93,8 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(66.dp))
-            val dogPictures by viewModel.dogPicturesLiveData.observeAsState(emptyList())
+            // Stage 2 works vv
+            val dogPictures by viewModel.dogImages.observeAsState(emptyList())
 
             if (dogPictures.isNotEmpty()) {
                 if (index in dogPictures.indices) {
@@ -112,7 +113,7 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogPicsViewModel, 
 @Composable
 fun DogPicture(imageUrl: String) {
     val painter = rememberAsyncImagePainter(imageUrl)
-    Box(Modifier) {
+    Box {
         Image(
             painter,
             contentDescription = null,
@@ -121,6 +122,7 @@ fun DogPicture(imageUrl: String) {
                 .padding(2.dp)
         )
         if (painter.state is AsyncImagePainter.State.Loading) {
+            Text(text = "Fetching images")
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }

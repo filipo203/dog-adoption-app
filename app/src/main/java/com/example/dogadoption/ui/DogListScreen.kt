@@ -40,10 +40,10 @@ import java.util.Locale
 @Composable
 fun DogListScreen(navController: NavController, viewModel: DogViewModel) {
 
-    val dogBreeds by viewModel.dogBreeds.observeAsState(emptyList())
+    val dogBreeds by viewModel.dogBreeds.observeAsState()
 
-    LaunchedEffect(viewModel) {
-        viewModel.fetchDogBreeds()
+    LaunchedEffect(Unit) {
+        viewModel.getDogBreeds()
     }
 
     Scaffold(
@@ -79,7 +79,7 @@ fun DogListScreen(navController: NavController, viewModel: DogViewModel) {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             modifier = Modifier.padding(top = 56.dp)
         ) {
-            items(dogBreeds) { breed ->
+            items(dogBreeds ?: emptyList()) { breed ->
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),

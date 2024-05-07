@@ -7,7 +7,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.dogadoption.navigation.Navigation
 import com.example.dogadoption.ui.theme.DogAdoptionTheme
-import com.example.dogadoption.viewmodels.DogPicsViewModel
 import com.example.dogadoption.viewmodels.DogViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,8 +18,7 @@ class MainActivity : AppCompatActivity() {
             DogAdoptionTheme {
                 val navController = rememberNavController()
                 val viewModel = hiltViewModel<DogViewModel>()
-                val picsViewModel = hiltViewModel<DogPicsViewModel>()
-                Navigation(navController, viewModel, picsViewModel)
+                Navigation(navController, viewModel)
             }
         }
     }
