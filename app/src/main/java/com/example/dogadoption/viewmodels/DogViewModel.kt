@@ -9,7 +9,6 @@ import com.example.dogadoption.daggerhilt.IoDispatcher
 import com.example.dogadoption.repository.DogRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,20 +24,25 @@ class DogViewModel @Inject constructor(
     private val _dogImages = MutableLiveData<List<String>>(emptyList())
     val dogImages: LiveData<List<String>> get() = _dogImages
 
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> get() = _loading
+
     private var dogBreedsFetched = false
-    //private var dogImagesFetched = false
 
     init {
-        fetchAndSaveDogBreeds()
-        //fetchDogImages()
+        saveDogBreeds()
     }
 
-    private fun fetchAndSaveDogBreeds() {
-        //fetches dog breeds from remote source and saves to database if empty
+    private fun setLoading(loading: Boolean) {
+        _loading.postValue(loading)
+    }
+
+    private fun saveDogBreeds() {
+        //saves dog breeds from remote source to database if empty
         if (!dogBreedsFetched) {
             viewModelScope.launch(dispatcher) {
                 try {
-                    dogRepository.fetchAndSaveDogBreeds()
+                    dogRepository.saveDogBreeds()
                     dogBreedsFetched = true
                     Log.d("DOGVIEWMODEL", "Dog breeds saved to database successfully!")
                 } catch (e: Exception) {
@@ -63,19 +67,21 @@ class DogViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Failed to fetch dog breeds from database: ${e.message}")
-                // Handle error
             }
         }
     }
 
-    fun fetchAndSaveDogPictures(breed: String) {
-        // Fetches dog images for the selected breed from remote source and saves to database
+    fun saveDogPictures(breed: String) {
+        //saves dog images for the selected breed from remote source to database if empty
         viewModelScope.launch(dispatcher) {
+            setLoading(true)
             try {
-                dogRepository.fetchAndSaveDogPictures(breed)
-                Log.d("DOGVIEWMODEL", "Dog images saved to database for $breed")
+                dogRepository.saveDogPictures(breed)
+                Log.d("DOGVIEWMODEL", "Dog pictures saved to database for $breed")
             } catch (e: Exception) {
-                Log.e("DOGVIEWMODEL", "Failed to save dog images to database: ${e.message}")
+                Log.e("DOGVIEWMODEL", "Failed to save dog pictures to database: ${e.message}")
+            } finally {
+                setLoading(false)
             }
         }
     }
@@ -90,12 +96,11 @@ class DogViewModel @Inject constructor(
                     _dogImages.postValue(imageUrlsList)
                     Log.d(
                         "DOGVIEWMODEL",
-                        "Dog images fetched from database successfully for $breed : $imagesFlow"
+                        "Dog pictures fetched from database successfully for $breed : $imagesFlow"
                     )
                 }
             } catch (e: Exception) {
-                Log.e("DOGVIEWMODEL", "Failed to fetch dog images from database: ${e.message}")
-                // Handle error
+                Log.e("DOGVIEWMODEL", "Failed to fetch dog pictures from database: ${e.message}")
             }
         }
     }

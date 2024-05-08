@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -89,22 +86,18 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState())
+                .padding(top = 66.dp),
+            horizontalAlignment = CenterHorizontally
         ) {
-            Spacer(Modifier.height(66.dp))
-            // Stage 2 works vv
             val dogPictures by viewModel.dogImages.observeAsState(emptyList())
 
             if (dogPictures.isNotEmpty()) {
                 if (index in dogPictures.indices) {
-                    DogPicture(imageUrl = dogPictures[index])
+                    DogPicture(dogPictures[index])
                 } else {
                     Text("Invalid index: $index")
                 }
-            }
-            Button(onClick = { /* TODO Handle adopt button click */ }) {
-                Text("Adopt")
             }
         }
     }
@@ -113,17 +106,30 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
 @Composable
 fun DogPicture(imageUrl: String) {
     val painter = rememberAsyncImagePainter(imageUrl)
-    Box {
-        Image(
-            painter,
-            contentDescription = null,
-            modifier = Modifier
-                .size(400.dp)
-                .padding(2.dp)
-        )
-        if (painter.state is AsyncImagePainter.State.Loading) {
-            Text(text = "Fetching images")
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (painter.state is AsyncImagePainter.State.Error) {
+            Text(
+                text = "No image available to preview",
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(top = 150.dp)
+            )
+        } else {
+            Image(
+                painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(400.dp)
+                    .padding(2.dp)
+            )
+            Button(
+                onClick = { /* TODO Handle adopt button click */ },
+                modifier = Modifier.align(CenterHorizontally)) {
+                Text("Adopt")
+            }
         }
     }
 }

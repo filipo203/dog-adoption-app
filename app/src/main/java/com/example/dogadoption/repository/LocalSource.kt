@@ -11,14 +11,14 @@ class LocalSource @Inject constructor(private val dogDao: DogDao) {
     fun getDogBreeds(): Flow<List<DogNames>> {
         return dogDao.getDogBreeds()
     }
-    suspend fun insertDogBreed(dogNames: List<DogNames>) {
-        dogDao.insertAllDogBreeds(dogNames)
+    suspend fun saveDogBreed(dogNames: List<DogNames>) {
+        dogDao.saveDogBreeds(dogNames)
     }
 
     fun getDogBreedImages(breed: String): Flow<List<String>> {
         return dogDao.getDogBreedImages(breed)
     }
-    suspend fun insertDogBreedImages(dogImages: DogImages) {
-        dogDao.insertDogBreedImages(dogImages)
+    suspend fun saveDogBreedImages(dogImages: DogImages) {
+        dogDao.saveDogBreedImages(dogImages)
     }
 }

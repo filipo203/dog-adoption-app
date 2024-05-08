@@ -13,11 +13,11 @@ interface DogDao {
     fun getDogBreeds(): Flow<List<DogNames>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllDogBreeds(dogNames: List<DogNames>)
+    suspend fun saveDogBreeds(dogNames: List<DogNames>)
 
     @Query("SELECT image_urls FROM dog_pictures WHERE breed_name =:breedName")
     fun getDogBreedImages(breedName: String): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDogBreedImages(dogBreeds: DogImages)
+    suspend fun saveDogBreedImages(dogBreeds: DogImages)
 }

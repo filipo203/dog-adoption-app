@@ -1,18 +1,10 @@
 package com.example.dogadoption.repository
 
-import android.content.ContentValues
 import android.util.Log
-import com.example.dogadoption.retrofit.DogApi
-import com.example.dogadoption.retrofit.DogPictures
 import com.example.dogadoption.room.DogNames
-import com.example.dogadoption.room.DogDao
 import com.example.dogadoption.room.DogImages
-//import com.example.dogadoption.room.DogLocalSource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.withContext
-import retrofit2.Response
 import javax.inject.Inject
 
 class DogRepository @Inject constructor(
@@ -24,42 +16,37 @@ class DogRepository @Inject constructor(
     }
 
     fun getDogImages(breed: String): Flow<List<String>> {
-        Log.e("DOG_REPOSITORY", "Fetched dog images for $breed")
+        Log.e("DOG_REPOSITORY", "Fetched dog images from database for $breed")
         return localSource.getDogBreedImages(breed)
-
     }
 
-    suspend fun fetchAndSaveDogBreeds() {
+    suspend fun saveDogBreeds() {
         val dogBreeds = localSource.getDogBreeds().firstOrNull()
         if (dogBreeds.isNullOrEmpty()) {
             try {
                 val remoteDogBreeds = remoteSource.getDogBreeds()
                 val dogNamesList = remoteDogBreeds.map { DogNames(0, it, "") }
-                localSource.insertDogBreed(dogNamesList)
+                localSource.saveDogBreed(dogNamesList)
             } catch (e: Exception) {
-                Log.e("DOG_REPOSITORY", "Failed to fetch dog breeds: ${e.message}")
+                Log.e("DOG_REPOSITORY", "Failed to save dog breeds: ${e.message}")
                 throw e
             }
         }
     }
 
-    suspend fun fetchAndSaveDogPictures(breed: String) {
-        val dogImageDB = localSource.getDogBreedImages(breed).firstOrNull()
-        if (dogImageDB.isNullOrEmpty()) {
+    suspend fun saveDogPictures(breed: String) {
+        val dogImageDB = localSource.getDogBreedImages(breed).firstOrNull() ?: emptyList()
+        if (dogImageDB.isEmpty()) {
             try {
                 val result = remoteSource.getDogPictures(breed)
                 result.onSuccess { dogPictures ->
                     dogPictures.forEach { imageUrl ->
-                        val existingImages = localSource.getDogBreedImages(breed).firstOrNull()
-                        if (existingImages == null || !existingImages.contains(imageUrl)) {
+                        if (!dogImageDB.contains(imageUrl)) {
                             val dogImages = DogImages(0, imageUrl, breed)
-                            localSource.insertDogBreedImages(dogImages)
+                            localSource.saveDogBreedImages(dogImages)
                         }
                     }
                     Log.d("DOG_REPOSITORY", "Dog pictures saved to database for $breed")
-                }.onFailure { e ->
-                    Log.e("DOG_REPOSITORY", "Failed to fetch dog pictures: ${e.message}")
-                    throw e
                 }
             } catch (e: Exception) {
                 Log.e("DOG_REPOSITORY", "Failed to save dog pictures to database: ${e.message}")

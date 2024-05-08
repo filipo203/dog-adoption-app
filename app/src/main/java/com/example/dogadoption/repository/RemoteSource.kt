@@ -1,6 +1,5 @@
 package com.example.dogadoption.repository
 
-import android.content.ContentValues
 import android.util.Log
 import com.example.dogadoption.retrofit.DogApi
 import com.example.dogadoption.retrofit.DogBreeds

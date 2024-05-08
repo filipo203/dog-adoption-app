@@ -6,7 +6,9 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -50,11 +52,12 @@ fun DogPicturesScreen(
     breed: String
 ) {
     val dogImage by viewModel.dogImages.observeAsState()
+    val loading by viewModel.loading.observeAsState()
 
     LaunchedEffect(breed) {
         Log.d(ContentValues.TAG, "Fetching dog pictures for breed: $breed")
         viewModel.getDogImages(breed)
-        viewModel.fetchAndSaveDogPictures(breed)
+        viewModel.saveDogPictures(breed)
     }
 
     Scaffold(
@@ -94,7 +97,20 @@ fun DogPicturesScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            if (dogImage != null && dogImage!!.isNotEmpty()) {
+            if (loading == true) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                ) {
+                    Text(text = "Downloading Images...",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+            } else if (dogImage != null && dogImage!!.isNotEmpty()) {
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     modifier = Modifier
@@ -111,8 +127,13 @@ fun DogPicturesScreen(
                     }
                 }
             } else {
-                Text(text = "Downloading images...")
-                CircularProgressIndicator()
+                Text(
+                    "Offline: \n Cannot access dog images",
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 28.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 35.sp
+                    )
             }
         }
     }
@@ -134,8 +155,12 @@ fun DogPictureItem(imageUrl: String, onClick: (String) -> Unit) {
                 .padding(2.dp)
         )
         if (painter.state is AsyncImagePainter.State.Loading) {
-            Text(text = "Fetching image")
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else if (painter.state is AsyncImagePainter.State.Error) {
+            Text(
+                text = "Error loading image",
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }
