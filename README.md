@@ -6,7 +6,7 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 ## Stage 3 - In progress 🚀
 - Room Database
 - Offline Capabilities with Cache
-- Other milestones in issues tab
+- (Other milestones in issues tab)
 
 ## Stage 2 - Completed ✅
 - Jetpack Compose Navigation
@@ -27,11 +27,11 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 - Giving user temporary feedback using the snackbar
 - Version control
 
-## Navigation
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Navigation.png)
-
 ## Dog API
 https://dog.ceo/dog-api/
+
+## Navigation
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Navigation.png)
 
 ## Screenshots
 
