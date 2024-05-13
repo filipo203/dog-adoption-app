@@ -83,15 +83,7 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(top = 66.dp),
-            horizontalAlignment = CenterHorizontally
-        ) {
             val dogPictures by viewModel.dogImages.observeAsState(emptyList())
-
             if (dogPictures.isNotEmpty()) {
                 if (index in dogPictures.indices) {
                     DogPicture(dogPictures[index])
@@ -99,7 +91,7 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
                     Text("Invalid index: $index")
                 }
             }
-        }
+
     }
 }
 
@@ -107,7 +99,9 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
 fun DogPicture(imageUrl: String) {
     val painter = rememberAsyncImagePainter(imageUrl)
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 66.dp)
     ) {
         if (painter.state is AsyncImagePainter.State.Error) {
             Text(

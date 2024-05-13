@@ -20,4 +20,7 @@ interface DogDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveDogBreedImages(dogBreeds: DogImages)
+
+    @Query("SELECT * FROM dog_names WHERE name LIKE :query")
+    fun searchDogBreeds(query: String): List<DogNames>
 }

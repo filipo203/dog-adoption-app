@@ -21,4 +21,7 @@ class LocalSource @Inject constructor(private val dogDao: DogDao) {
     suspend fun saveDogBreedImages(dogImages: DogImages) {
         dogDao.saveDogBreedImages(dogImages)
     }
+    fun searchDogBreeds(query: String): List<DogNames> {
+        return dogDao.searchDogBreeds("%$query%")
+    }
 }

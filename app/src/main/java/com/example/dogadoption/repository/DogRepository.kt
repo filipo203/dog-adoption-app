@@ -54,4 +54,7 @@ class DogRepository @Inject constructor(
             }
         }
     }
+    fun searchDogBreeds(query: String): List<DogNames> {
+        return localSource.searchDogBreeds(query)
+    }
 }

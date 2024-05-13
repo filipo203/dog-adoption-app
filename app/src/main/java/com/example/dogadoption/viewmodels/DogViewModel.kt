@@ -5,10 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogadoption.daggerhilt.IoDispatcher
 import com.example.dogadoption.repository.DogRepository
+import com.example.dogadoption.room.DogNames
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -67,6 +71,22 @@ class DogViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Failed to fetch dog breeds from database: ${e.message}")
+            }
+        }
+    }
+
+    fun searchDogBreeds(query: String) {
+        //searches for dog breeds from database
+        viewModelScope.launch(dispatcher) {
+            setLoading(true)
+            try {
+                val searchBreeds = dogRepository.searchDogBreeds(query)
+                val breedNames = searchBreeds.map { it.name }
+                _dogBreeds.postValue(breedNames)
+            } catch (e: Exception) {
+                Log.e("DOGVIEWMODEL", "Error searching for dogs")
+            } finally {
+                setLoading(false)
             }
         }
     }
