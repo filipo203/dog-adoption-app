@@ -37,7 +37,7 @@ https://dog.ceo/dog-api/
 ## Screenshots
 
 ![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240415_205726.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240415_205750.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240415_205834.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240415_205851.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240514_181238.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240514_181347.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240514_181404.png)
 =======
