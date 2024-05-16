@@ -5,14 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogadoption.daggerhilt.IoDispatcher
 import com.example.dogadoption.repository.DogRepository
-import com.example.dogadoption.room.DogNames
+import com.example.dogadoption.room.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,8 +30,12 @@ class DogViewModel @Inject constructor(
 
     private var dogBreedsFetched = false
 
+    private val _user = MutableLiveData<User?>()
+    val user: LiveData<User?> get() = _user
+
     init {
         saveDogBreeds()
+        getUser()
     }
 
     private fun setLoading(loading: Boolean) {
@@ -122,6 +123,19 @@ class DogViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Failed to fetch dog pictures from database: ${e.message}")
             }
+        }
+    }
+    fun insertUser(name: String) {
+        viewModelScope.launch(dispatcher) {
+            val user = User(userName = name)
+            dogRepository.insertUser(user)
+            _user.postValue(user)
+        }
+    }
+    private fun getUser() {
+        viewModelScope.launch(dispatcher) {
+            val user = dogRepository.getUser()
+            _user.postValue(user)
         }
     }
 }

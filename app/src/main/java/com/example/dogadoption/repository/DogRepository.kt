@@ -3,6 +3,7 @@ package com.example.dogadoption.repository
 import android.util.Log
 import com.example.dogadoption.room.DogNames
 import com.example.dogadoption.room.DogImages
+import com.example.dogadoption.room.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
@@ -56,5 +57,11 @@ class DogRepository @Inject constructor(
     }
     fun searchDogBreeds(query: String): List<DogNames> {
         return localSource.searchDogBreeds(query)
+    }
+    suspend fun insertUser(user: User) {
+        return localSource.insertUser(user)
+    }
+    suspend fun getUser(): User? {
+        return localSource.getUser()
     }
 }

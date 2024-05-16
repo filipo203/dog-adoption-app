@@ -5,4 +5,6 @@ sealed class Screen(val route: String) {
     object ListScreen : Screen("DogListScreen")
     object PicsScreen : Screen("DogPicsScreen/{breed}")
     object PrevScreen : Screen("DogPreview/{breed}/{selectedImageUrl}/{index}")
+    object UserScreen : Screen("UserScreen")
+
 }

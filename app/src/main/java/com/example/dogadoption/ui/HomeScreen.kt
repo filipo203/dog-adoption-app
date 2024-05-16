@@ -55,5 +55,14 @@ fun HomeScreen(navController: NavController) {
                 color = Color.White
             )
         }
+        Button(onClick = {
+            navController.navigate("UserScreen")
+        }
+        ) {
+            Text(
+                "Profile",
+                color = Color.White
+            )
+        }
     }
 }

@@ -2,12 +2,15 @@ package com.example.dogadoption.daggerhilt
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.dogadoption.repository.DogRepository
 import com.example.dogadoption.repository.LocalSource
 import com.example.dogadoption.repository.RemoteSource
 import com.example.dogadoption.retrofit.DogApi
 import com.example.dogadoption.room.DogDao
 import com.example.dogadoption.room.DogDatabase
+import com.example.dogadoption.room.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,11 +47,22 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDogDatabase(@ApplicationContext context: Context): DogDatabase {
+        val migration1to2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `user_profile` (" +
+                            "`id` INTEGER NOT NULL, " +
+                            "`user_name` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`id`))"
+                )
+            }
+        }
         return Room.databaseBuilder(
             context.applicationContext,
             DogDatabase::class.java,
             "dog_database"
-        ).build()
+        ).addMigrations(migration1to2)
+        .build()
     }
 
     @Provides
@@ -56,4 +70,10 @@ object AppModule {
     fun provideDogDao(database: DogDatabase): DogDao {
         return database.dogDao()
     }
+    @Provides
+    @Singleton
+    fun provideUserDao(database: DogDatabase): UserDao {
+        return database.userDao()
+    }
+
 }

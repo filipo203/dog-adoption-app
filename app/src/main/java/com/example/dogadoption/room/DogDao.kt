@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DogDao {
-
     @Query("SELECT * FROM dog_names")
     fun getDogBreeds(): Flow<List<DogNames>>
 
