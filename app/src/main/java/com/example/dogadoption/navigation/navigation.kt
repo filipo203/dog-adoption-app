@@ -15,7 +15,7 @@ import com.example.dogadoption.viewmodels.DogViewModel
 fun Navigation(navController: NavHostController, dogViewModel: DogViewModel) {
     NavHost(navController, startDestination = Screen.HomeScreen.route) {
         composable(Screen.HomeScreen.route) {
-            HomeScreen(navController)
+            HomeScreen(navController, dogViewModel)
         }
         composable(Screen.ListScreen.route) {
             DogListScreen(navController, dogViewModel)
@@ -29,7 +29,7 @@ fun Navigation(navController: NavHostController, dogViewModel: DogViewModel) {
             DogPreviewScreen(navController, dogViewModel, index)
         }
         composable(Screen.UserScreen.route) {
-            UserProfile(navController, viewModel = dogViewModel)
+            UserProfile(navController, dogViewModel)
         }
     }
 }
