@@ -7,6 +7,9 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 - Room Database ✅
 - Offline Capabilities with Cache ✅
 - Search bar for list of dogs ✅
+- Database version migration ✅
+- UI state ✅
+- User profile ✅
 - (Other milestones in issues tab)
 
 ## Stage 2 - Completed ✅
