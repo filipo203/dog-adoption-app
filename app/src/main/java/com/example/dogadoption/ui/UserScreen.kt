@@ -2,45 +2,29 @@ package com.example.dogadoption.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,11 +34,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.dogadoption.room.UserEvent
-import com.example.dogadoption.room.UserState
+import com.example.dogadoption.room.user.UserEvent
+import com.example.dogadoption.room.user.UserState
 
 import com.example.dogadoption.viewmodels.DogViewModel
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +48,7 @@ fun UserProfile(
 ) {
     val user by viewModel.user.observeAsState()
     val uiState by viewModel.uiState.observeAsState(UserState())
+    val favouriteDogs by viewModel.favoriteDogs.observeAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -148,13 +132,35 @@ fun UserProfile(
                     textAlign = TextAlign.Center,
                     color = Color.Black
                 )
-                //TODO: Lazy list for favourite dogs here
-                Text(
-                    "Coming soon...",
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black
-                )
+                if (favouriteDogs != null && favouriteDogs!!.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalAlignment = CenterHorizontally
+                    ) {
+                        itemsIndexed(favouriteDogs!!) { index, dogData ->
+                            val dogImage = favouriteDogs?.get(index)
+                            if (dogImage != null) {
+                                DogPictureItem(dogImage) {
+                                    navController.navigate(
+                                        "DogPreview/{breed}/{selectedImageUrl}/${index}"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Spacer(modifier = Modifier.padding(top = 5.dp))
+                    Text(
+                        "Your favourite dogs will be displayed here!",
+                        modifier = Modifier.fillMaxSize(),
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 30.sp
+                    )
+                }
             }
         }
     }

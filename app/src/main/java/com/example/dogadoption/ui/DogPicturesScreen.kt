@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.dogadoption.room.dogs.DogImages
 import com.example.dogadoption.viewmodels.DogViewModel
 import java.util.Locale
 
@@ -51,7 +52,7 @@ fun DogPicturesScreen(
     viewModel: DogViewModel,
     breed: String
 ) {
-    val dogImage by viewModel.dogImages.observeAsState()
+    val dogImageData by viewModel.dogImageData.observeAsState()
     val loading by viewModel.loading.observeAsState()
 
     LaunchedEffect(breed) {
@@ -98,19 +99,22 @@ fun DogPicturesScreen(
                 .padding(16.dp)
         ) {
             if (loading == true) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
                 ) {
-                    Text(text = "Downloading Images...",
+                    Text(
+                        text = "Downloading Images...",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.align(Alignment.CenterHorizontally))
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                     Spacer(modifier = Modifier.padding(4.dp))
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
-            } else if (dogImage != null && dogImage!!.isNotEmpty()) {
+            } else if (dogImageData != null && dogImageData!!.isNotEmpty()) {
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     modifier = Modifier
@@ -118,11 +122,14 @@ fun DogPicturesScreen(
                         .padding(top = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(dogImage!!) { index, imageUrl ->
-                        DogPictureItem(imageUrl) {
-                            navController.navigate(
-                                "DogPreview/{breed}/{selectedImageUrl}/${index}"
-                            )
+                    itemsIndexed(dogImageData!!) { index, dogData ->
+                        val dogImage = dogImageData?.get(index)
+                        if (dogImage != null) {
+                            DogPictureItem(dogImage) {
+                                navController.navigate(
+                                    "DogPreview/{breed}/{selectedImageUrl}/${index}"
+                                )
+                            }
                         }
                     }
                 }
@@ -133,18 +140,21 @@ fun DogPicturesScreen(
                     fontSize = 28.sp,
                     textAlign = TextAlign.Center,
                     lineHeight = 35.sp
-                    )
+                )
             }
         }
     }
 }
 
 @Composable
-fun DogPictureItem(imageUrl: String, onClick: (String) -> Unit) {
-    val painter = rememberAsyncImagePainter(model = imageUrl)
+fun DogPictureItem(dogImages: DogImages, onClick: (String) -> Unit) {
+    val painter = rememberAsyncImagePainter(model = dogImages.imageUrls)
     Box(Modifier.clickable {
-        Log.e(ContentValues.TAG, "DogPictureItem: Clicked image URL: $imageUrl")
-        onClick.invoke(imageUrl)
+        Log.e(
+            ContentValues.TAG,
+            "DogPictureItem: Clicked image URL: ${dogImages.imageUrls}, DogImages = $dogImages"
+        )
+        onClick.invoke(dogImages.imageUrls)
     }) {
         Image(
             painter,

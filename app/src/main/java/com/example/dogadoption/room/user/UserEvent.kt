@@ -1,4 +1,4 @@
-package com.example.dogadoption.room
+package com.example.dogadoption.room.user
 
 sealed interface UserEvent {
     object SaveUser: UserEvent

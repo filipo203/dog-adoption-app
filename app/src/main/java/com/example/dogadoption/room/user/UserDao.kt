@@ -1,4 +1,4 @@
-package com.example.dogadoption.room
+package com.example.dogadoption.room.user
 
 import androidx.room.Dao
 import androidx.room.Insert

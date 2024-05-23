@@ -21,9 +21,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.dogadoption.room.UserEvent
-import com.example.dogadoption.room.UserState
-import kotlinx.coroutines.coroutineScope
+import com.example.dogadoption.room.user.UserEvent
+import com.example.dogadoption.room.user.UserState
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

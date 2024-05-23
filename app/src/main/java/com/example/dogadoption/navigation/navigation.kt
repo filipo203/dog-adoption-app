@@ -33,6 +33,3 @@ fun Navigation(navController: NavHostController, dogViewModel: DogViewModel) {
         }
     }
 }
-
-
-

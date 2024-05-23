@@ -1,22 +1,22 @@
 package com.example.dogadoption.repository
 
 import android.util.Log
-import com.example.dogadoption.room.DogNames
-import com.example.dogadoption.room.DogImages
-import com.example.dogadoption.room.User
+import com.example.dogadoption.room.dogs.DogNames
+import com.example.dogadoption.room.dogs.DogImages
+import com.example.dogadoption.room.user.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class DogRepository @Inject constructor(
     private val remoteSource: RemoteSource,
-    private val localSource: LocalSource,
+    private val localSource: LocalSource
 ) {
     fun getDogBreeds(): Flow<List<DogNames>> {
         return localSource.getDogBreeds()
     }
 
-    fun getDogImages(breed: String): Flow<List<String>> {
+    fun getDogImages(breed: String): Flow<List<DogImages>> {
         Log.e("DOG_REPOSITORY", "Fetched dog images from database for $breed")
         return localSource.getDogBreedImages(breed)
     }
@@ -42,8 +42,8 @@ class DogRepository @Inject constructor(
                 val result = remoteSource.getDogPictures(breed)
                 result.onSuccess { dogPictures ->
                     dogPictures.forEach { imageUrl ->
-                        if (!dogImageDB.contains(imageUrl)) {
-                            val dogImages = DogImages(0, imageUrl, breed)
+                        if (!dogImageDB.any { it.imageUrls == imageUrl}) {
+                            val dogImages = DogImages(0, imageUrl, breed, false )
                             localSource.saveDogBreedImages(dogImages)
                         }
                     }
@@ -57,6 +57,12 @@ class DogRepository @Inject constructor(
     }
     fun searchDogBreeds(query: String): List<DogNames> {
         return localSource.searchDogBreeds(query)
+    }
+    suspend fun toggleFavourite(dogImage: DogImages) {
+        return localSource.toggleFavourite(dogImage)
+    }
+    fun getFavoriteDogImages(): Flow<List<DogImages>> {
+        return localSource.getFavoriteDogImages()
     }
     suspend fun insertUser(user: User) {
         return localSource.insertUser(user)

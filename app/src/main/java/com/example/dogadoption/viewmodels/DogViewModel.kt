@@ -7,9 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dogadoption.daggerhilt.IoDispatcher
 import com.example.dogadoption.repository.DogRepository
-import com.example.dogadoption.room.User
-import com.example.dogadoption.room.UserEvent
-import com.example.dogadoption.room.UserState
+import com.example.dogadoption.room.dogs.DogImages
+import com.example.dogadoption.room.user.User
+import com.example.dogadoption.room.user.UserEvent
+import com.example.dogadoption.room.user.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -24,13 +25,16 @@ class DogViewModel @Inject constructor(
     private val _dogBreeds = MutableLiveData<List<String>>()
     val dogBreeds: LiveData<List<String>> get() = _dogBreeds
 
-    private val _dogImages = MutableLiveData<List<String>>(emptyList())
-    val dogImages: LiveData<List<String>> get() = _dogImages
+    private val _dogImageData = MutableLiveData<List<DogImages>?>(emptyList())
+    val dogImageData: LiveData<List<DogImages>?> get() = _dogImageData
 
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> get() = _loading
 
     private var dogBreedsFetched = false
+
+    private val _favoriteDogs = MutableLiveData<List<DogImages>>(emptyList())
+    val favoriteDogs: LiveData<List<DogImages>> get() = _favoriteDogs
 
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> get() = _user
@@ -41,6 +45,7 @@ class DogViewModel @Inject constructor(
     init {
         saveDogBreeds()
         getUser()
+        getFavoriteDogs()
     }
 
     private fun setLoading(loading: Boolean) {
@@ -113,24 +118,36 @@ class DogViewModel @Inject constructor(
     }
 
     fun getDogImages(breed: String) {
-        //gets dog images from database
         viewModelScope.launch(dispatcher) {
             try {
                 val imagesFlow = dogRepository.getDogImages(breed)
-                imagesFlow.collect { imageUrlsList ->
-                    // Update LiveData with new image URLs
-                    _dogImages.postValue(imageUrlsList)
-                    Log.d(
-                        "DOGVIEWMODEL",
-                        "Dog pictures fetched from database successfully for $breed : $imagesFlow"
-                    )
+                imagesFlow.collect { dogImageUrl ->
+                    _dogImageData.postValue(dogImageUrl)
                 }
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Failed to fetch dog pictures from database: ${e.message}")
             }
         }
     }
-    fun insertUser(name: String) {
+    private fun getFavoriteDogs() {
+        viewModelScope.launch(dispatcher) {
+            dogRepository.getFavoriteDogImages().collect {favouriteDogList ->
+                _favoriteDogs.postValue(favouriteDogList)
+            }
+        }
+    }
+    fun toggleFavourite(dogImage: DogImages) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                dogRepository.toggleFavourite(dogImage.copy(isFavourite = !dogImage.isFavourite))
+                getFavoriteDogs()
+                Log.d("DOGVIEWMODEL", "Toggled favourite status for image ID: ${dogImage.id}, ${dogImageData}")
+            } catch (e: Exception) {
+                Log.e("DOGVIEWMODEL", "Failed to update favorite status: ${e.message}")
+            }
+        }
+    }
+    private fun insertUser(name: String) {
         viewModelScope.launch(dispatcher) {
             val user = User(userName = name)
             dogRepository.insertUser(user)
