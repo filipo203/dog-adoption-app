@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogadoption.room.user.UserEvent
 import com.example.dogadoption.room.user.UserState
-
 import com.example.dogadoption.viewmodels.DogViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -140,14 +139,9 @@ fun UserProfile(
                             .padding(top = 10.dp),
                         horizontalAlignment = CenterHorizontally
                     ) {
-                        itemsIndexed(favouriteDogs!!) { index, dogData ->
-                            val dogImage = favouriteDogs?.get(index)
-                            if (dogImage != null) {
-                                DogPictureItem(dogImage) {
-                                    navController.navigate(
-                                        "DogPreview/{breed}/{selectedImageUrl}/${index}"
-                                    )
-                                }
+                        items(favouriteDogs ?: emptyList()) {dogImage ->
+                            DogPictureItem(dogImages = dogImage) {
+                                navController.navigate("DogPreview/${dogImage.id}")
                             }
                         }
                     }

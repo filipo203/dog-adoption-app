@@ -25,8 +25,8 @@ fun Navigation(navController: NavHostController, dogViewModel: DogViewModel) {
             DogPicturesScreen(navController, dogViewModel, breed)
         }
         composable(Screen.PrevScreen.route) {backStackEntry ->
-            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
-            DogPreviewScreen(navController, dogViewModel, index)
+            val imageId = backStackEntry.arguments?.getString("imageId")?.toIntOrNull() ?: 0
+            DogPreviewScreen(navController, dogViewModel, imageId)
         }
         composable(Screen.UserScreen.route) {
             UserProfile(navController, dogViewModel)

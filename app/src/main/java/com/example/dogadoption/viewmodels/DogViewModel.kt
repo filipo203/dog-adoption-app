@@ -2,6 +2,7 @@ package com.example.dogadoption.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,6 +36,16 @@ class DogViewModel @Inject constructor(
 
     private val _favoriteDogs = MutableLiveData<List<DogImages>>(emptyList())
     val favoriteDogs: LiveData<List<DogImages>> get() = _favoriteDogs
+
+    private val _allImages = MediatorLiveData<List<DogImages>>().apply {
+        addSource(_dogImageData) { images ->
+            value = (images ?: emptyList()) + (_favoriteDogs.value ?: emptyList())
+        }
+        addSource(_favoriteDogs) { favorites ->
+            value = (_dogImageData.value ?: emptyList()) + (favorites ?: emptyList())
+        }
+    }
+    val allImages: LiveData<List<DogImages>> get() = _allImages
 
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> get() = _user

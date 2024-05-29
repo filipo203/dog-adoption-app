@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -52,7 +52,7 @@ fun DogPicturesScreen(
     viewModel: DogViewModel,
     breed: String
 ) {
-    val dogImageData by viewModel.dogImageData.observeAsState()
+    val dogImageData by viewModel.dogImageData.observeAsState(emptyList())
     val loading by viewModel.loading.observeAsState()
 
     LaunchedEffect(breed) {
@@ -114,7 +114,7 @@ fun DogPicturesScreen(
                     Spacer(modifier = Modifier.padding(4.dp))
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
-            } else if (dogImageData != null && dogImageData!!.isNotEmpty()) {
+            } else if (dogImageData != null && dogImageData!!.isNotEmpty()){
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     modifier = Modifier
@@ -122,14 +122,9 @@ fun DogPicturesScreen(
                         .padding(top = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(dogImageData!!) { index, dogData ->
-                        val dogImage = dogImageData?.get(index)
-                        if (dogImage != null) {
-                            DogPictureItem(dogImage) {
-                                navController.navigate(
-                                    "DogPreview/{breed}/{selectedImageUrl}/${index}"
-                                )
-                            }
+                    items(dogImageData ?: emptyList()) { dogImage ->
+                        DogPictureItem(dogImages = dogImage) {
+                            navController.navigate("DogPreview/${dogImage.id}")
                         }
                     }
                 }

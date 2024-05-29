@@ -55,12 +55,16 @@ import java.util.Locale
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, index: Int) {
+fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, imageId: Int) {
 
     val breed = navController.previousBackStackEntry?.arguments?.getString("breed") ?: ""
     val dogImageData by viewModel.dogImageData.observeAsState(emptyList())
+    val dogImageId = dogImageData?.find { it.id == imageId }
 
-    val dogImage = dogImageData?.getOrNull(index)
+    val allImages by viewModel.allImages.observeAsState(emptyList())
+    val dogImage = allImages.find { it.id == imageId }
+
+    //val dogImage = dogImageData?.getOrNull(index)
 
 
     LaunchedEffect(Unit) {
@@ -100,29 +104,32 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, inde
                 actions = {
                     IconButton(
                         onClick = {
-                            if (dogImage != null) {
-                                viewModel.toggleFavourite(dogImage)
+                            if (dogImageId != null) {
+                                viewModel.toggleFavourite(dogImageId)
                             }
                         },
                         modifier = Modifier.pulseClick()
                     ) {
                         Icon(
-                            imageVector = if (dogImage?.isFavourite == true) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            imageVector = if (dogImageId?.isFavourite == true) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = null,
-                            tint = if (dogImage?.isFavourite == true) Color.Red else Color.Black
+                            tint = if (dogImageId?.isFavourite == true) Color.Red else Color.Black
                         )
                     }
                 }
             )
         }
     ) {
-        if (dogImageData?.isNotEmpty() == true) {
-            if (index in dogImageData!!.indices) {
-                DogPicture(dogImageData!![index])
-            } else {
-                Text("Invalid index: $index")
-            }
+        dogImage?.let { dog ->
+            DogPicture(dogImages = dog)
         }
+        /*if (dogImageData?.isNotEmpty() == true) {
+            if (imageId in dogImageData!!.indices) {
+                DogPicture(dogImageData!![imageId])
+            } else {
+                Text("Invalid image ID: $imageId")
+            }
+        }*/
     }
 }
 
