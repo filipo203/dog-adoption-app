@@ -55,17 +55,16 @@ import java.util.Locale
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, imageId: Int) {
-
-    val breed = navController.previousBackStackEntry?.arguments?.getString("breed") ?: ""
-    val dogImageData by viewModel.dogImageData.observeAsState(emptyList())
-    val dogImageId = dogImageData?.find { it.id == imageId }
-
-    val allImages by viewModel.allImages.observeAsState(emptyList())
-    val dogImage = allImages.find { it.id == imageId }
-
-    //val dogImage = dogImageData?.getOrNull(index)
-
+fun DogPreviewScreen(
+    navController: NavController,
+    viewModel: DogViewModel,
+    imageId: Int)
+{
+    val allImages by viewModel.dogImageData.observeAsState(emptyList())
+    val favouriteImages by viewModel.favoriteDogs.observeAsState(emptyList())
+    val allDogImages = (allImages + favouriteImages)
+    val dogImage = allDogImages.find { it.id == imageId }
+    val breed = dogImage?.breedName ?: ""
 
     LaunchedEffect(Unit) {
         Log.d(ContentValues.TAG, "Fetching dog pictures for breed: $breed")
@@ -104,16 +103,16 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, imag
                 actions = {
                     IconButton(
                         onClick = {
-                            if (dogImageId != null) {
-                                viewModel.toggleFavourite(dogImageId)
+                            if (dogImage != null) {
+                                viewModel.toggleFavourite(dogImage)
                             }
                         },
                         modifier = Modifier.pulseClick()
                     ) {
                         Icon(
-                            imageVector = if (dogImageId?.isFavourite == true) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            imageVector = if (dogImage?.isFavourite == true) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = null,
-                            tint = if (dogImageId?.isFavourite == true) Color.Red else Color.Black
+                            tint = if (dogImage?.isFavourite == true) Color.Red else Color.Black
                         )
                     }
                 }
@@ -123,13 +122,6 @@ fun DogPreviewScreen(navController: NavController, viewModel: DogViewModel, imag
         dogImage?.let { dog ->
             DogPicture(dogImages = dog)
         }
-        /*if (dogImageData?.isNotEmpty() == true) {
-            if (imageId in dogImageData!!.indices) {
-                DogPicture(dogImageData!![imageId])
-            } else {
-                Text("Invalid image ID: $imageId")
-            }
-        }*/
     }
 }
 

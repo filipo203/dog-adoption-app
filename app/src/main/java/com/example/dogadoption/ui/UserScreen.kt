@@ -131,21 +131,7 @@ fun UserProfile(
                     textAlign = TextAlign.Center,
                     color = Color.Black
                 )
-                if (favouriteDogs != null && favouriteDogs!!.isNotEmpty()) {
-                    LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp),
-                        horizontalAlignment = CenterHorizontally
-                    ) {
-                        items(favouriteDogs ?: emptyList()) {dogImage ->
-                            DogPictureItem(dogImages = dogImage) {
-                                navController.navigate("DogPreview/${dogImage.id}")
-                            }
-                        }
-                    }
-                } else {
+                if (favouriteDogs.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.padding(top = 5.dp))
                     Text(
                         "Your favourite dogs will be displayed here!",
@@ -154,6 +140,21 @@ fun UserProfile(
                         textAlign = TextAlign.Center,
                         lineHeight = 30.sp
                     )
+
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalAlignment = CenterHorizontally
+                    ) {
+                        items(favouriteDogs!!) {dogImage ->
+                            DogPictureItem(dogImages = dogImage) {
+                                navController.navigate("DogPreview/${dogImage.id}")
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -26,26 +26,16 @@ class DogViewModel @Inject constructor(
     private val _dogBreeds = MutableLiveData<List<String>>()
     val dogBreeds: LiveData<List<String>> get() = _dogBreeds
 
-    private val _dogImageData = MutableLiveData<List<DogImages>?>(emptyList())
-    val dogImageData: LiveData<List<DogImages>?> get() = _dogImageData
+    private val _dogImageData = MutableLiveData<List<DogImages>>(emptyList())
+    val dogImageData: LiveData<List<DogImages>> get() = _dogImageData
+
+    private var dogBreedsFetched = false
 
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> get() = _loading
 
-    private var dogBreedsFetched = false
-
     private val _favoriteDogs = MutableLiveData<List<DogImages>>(emptyList())
     val favoriteDogs: LiveData<List<DogImages>> get() = _favoriteDogs
-
-    private val _allImages = MediatorLiveData<List<DogImages>>().apply {
-        addSource(_dogImageData) { images ->
-            value = (images ?: emptyList()) + (_favoriteDogs.value ?: emptyList())
-        }
-        addSource(_favoriteDogs) { favorites ->
-            value = (_dogImageData.value ?: emptyList()) + (favorites ?: emptyList())
-        }
-    }
-    val allImages: LiveData<List<DogImages>> get() = _allImages
 
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> get() = _user
@@ -64,7 +54,6 @@ class DogViewModel @Inject constructor(
     }
 
     private fun saveDogBreeds() {
-        //saves dog breeds from remote source to database if empty
         if (!dogBreedsFetched) {
             viewModelScope.launch(dispatcher) {
                 try {
@@ -79,7 +68,6 @@ class DogViewModel @Inject constructor(
     }
 
     fun getDogBreeds() {
-        //gets dog breeds from database
         viewModelScope.launch(dispatcher) {
             try {
                 val breedsFlow = dogRepository.getDogBreeds()
@@ -98,7 +86,6 @@ class DogViewModel @Inject constructor(
     }
 
     fun searchDogBreeds(query: String) {
-        //searches for dog breeds from database
         viewModelScope.launch(dispatcher) {
             setLoading(true)
             try {
@@ -114,7 +101,6 @@ class DogViewModel @Inject constructor(
     }
 
     fun saveDogPictures(breed: String) {
-        //saves dog images for the selected breed from remote source to database if empty
         viewModelScope.launch(dispatcher) {
             setLoading(true)
             try {
@@ -140,24 +126,34 @@ class DogViewModel @Inject constructor(
             }
         }
     }
+
     private fun getFavoriteDogs() {
         viewModelScope.launch(dispatcher) {
-            dogRepository.getFavoriteDogImages().collect {favouriteDogList ->
+            dogRepository.getFavoriteDogImages().collect { favouriteDogList ->
                 _favoriteDogs.postValue(favouriteDogList)
             }
         }
     }
+
     fun toggleFavourite(dogImage: DogImages) {
         viewModelScope.launch(dispatcher) {
             try {
-                dogRepository.toggleFavourite(dogImage.copy(isFavourite = !dogImage.isFavourite))
-                getFavoriteDogs()
-                Log.d("DOGVIEWMODEL", "Toggled favourite status for image ID: ${dogImage.id}, ${dogImageData}")
+                val updatedDogImage = dogImage.copy(isFavourite = !dogImage.isFavourite)
+                dogRepository.toggleFavourite(updatedDogImage)
+                _favoriteDogs.postValue(
+                    _favoriteDogs.value?.map {
+                        if (it.id == updatedDogImage.id) updatedDogImage else it
+                    }
+                )
+                val allImages = (_dogImageData.value ?: emptyList()) + (_favoriteDogs.value ?: emptyList())
+                _dogImageData.postValue(allImages)
+                Log.d("DOGVIEWMODEL", "Toggled favourite status for image ID: ${dogImage.id}")
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Failed to update favorite status: ${e.message}")
             }
         }
     }
+
     private fun insertUser(name: String) {
         viewModelScope.launch(dispatcher) {
             val user = User(userName = name)
@@ -166,6 +162,7 @@ class DogViewModel @Inject constructor(
             _uiState.postValue(_uiState.value?.copy(userName = name, isAddingUser = false))
         }
     }
+
     private fun getUser() {
         viewModelScope.launch(dispatcher) {
             val user = dogRepository.getUser()
@@ -175,12 +172,13 @@ class DogViewModel @Inject constructor(
             }
         }
     }
+
     fun onEvent(event: UserEvent) {
         when (event) {
             is UserEvent.SetUserName -> _uiState.value = _uiState.value?.copy(userName = event.userName)
             UserEvent.SaveUser -> {
                 val name = _uiState.value?.userName.orEmpty()
-                    insertUser(name)
+                insertUser(name)
             }
             UserEvent.ShowDialog -> _uiState.value = _uiState.value?.copy(isAddingUser = true)
             UserEvent.HideDialog -> _uiState.value = _uiState.value?.copy(isAddingUser = false)
