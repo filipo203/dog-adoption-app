@@ -10,6 +10,8 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 - Database version migration ✅
 - UI state ✅
 - User profile ✅
+- Favourites feature ✅
+- Button animation ✅
 - (Other milestones in issues tab)
 
 ## Stage 2 - Completed ✅
