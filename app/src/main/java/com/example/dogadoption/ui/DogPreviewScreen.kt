@@ -48,7 +48,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.dogadoption.room.dogs.DogImages
-import com.example.dogadoption.viewmodels.DogViewModel
+import com.example.dogadoption.viewmodels.DogPicsViewModel
 import java.util.Locale
 
 
@@ -57,7 +57,7 @@ import java.util.Locale
 @Composable
 fun DogPreviewScreen(
     navController: NavController,
-    viewModel: DogViewModel,
+    viewModel: DogPicsViewModel,
     imageId: Int)
 {
     val allImages by viewModel.dogImageData.observeAsState(emptyList())

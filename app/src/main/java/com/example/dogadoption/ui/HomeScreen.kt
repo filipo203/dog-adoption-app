@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogadoption.R
 import com.example.dogadoption.viewmodels.DogViewModel
+import com.example.dogadoption.viewmodels.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: DogViewModel) {
+fun HomeScreen(navController: NavController, viewModel: UserViewModel) {
     val user by viewModel.user.observeAsState()
 
     Column(

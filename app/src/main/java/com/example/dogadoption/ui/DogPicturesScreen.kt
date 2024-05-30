@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.dogadoption.room.dogs.DogImages
+import com.example.dogadoption.viewmodels.DogPicsViewModel
 import com.example.dogadoption.viewmodels.DogViewModel
 import java.util.Locale
 
@@ -49,7 +50,7 @@ import java.util.Locale
 @Composable
 fun DogPicturesScreen(
     navController: NavController,
-    viewModel: DogViewModel,
+    viewModel: DogPicsViewModel,
     breed: String
 ) {
     val dogImageData by viewModel.dogImageData.observeAsState(emptyList())
@@ -122,7 +123,7 @@ fun DogPicturesScreen(
                         .padding(top = 56.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(dogImageData ?: emptyList()) { dogImage ->
+                    items(dogImageData) { dogImage ->
                         DogPictureItem(dogImages = dogImage) {
                             navController.navigate("DogPreview/${dogImage.id}")
                         }

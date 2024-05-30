@@ -37,13 +37,14 @@ import androidx.navigation.NavController
 import com.example.dogadoption.room.user.UserEvent
 import com.example.dogadoption.room.user.UserState
 import com.example.dogadoption.viewmodels.DogViewModel
+import com.example.dogadoption.viewmodels.UserViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfile(
     navController: NavController,
-    viewModel: DogViewModel
+    viewModel: UserViewModel
 ) {
     val user by viewModel.user.observeAsState()
     val uiState by viewModel.uiState.observeAsState(UserState())
