@@ -26,8 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,13 +47,13 @@ import java.util.Locale
 @Composable
 fun DogListScreen(navController: NavController, viewModel: DogViewModel) {
 
-    val dogBreeds by viewModel.dogBreeds.observeAsState()
+    val dogBreeds by viewModel.dogBreeds.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     val searchDogBreeds = if (searchQuery.isEmpty()) {
-        dogBreeds ?: emptyList()
+        dogBreeds
     } else {
-        dogBreeds?.filter { it.contains(searchQuery, ignoreCase = true) } ?: emptyList()
+        dogBreeds.filter { it.contains(searchQuery, ignoreCase = true) }
     }
 
     LaunchedEffect(Unit) {

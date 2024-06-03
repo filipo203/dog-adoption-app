@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,11 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,8 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogadoption.room.user.UserEvent
-import com.example.dogadoption.room.user.UserState
-import com.example.dogadoption.viewmodels.DogViewModel
 import com.example.dogadoption.viewmodels.UserViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -46,9 +48,11 @@ fun UserProfile(
     navController: NavController,
     viewModel: UserViewModel
 ) {
-    val user by viewModel.user.observeAsState()
-    val uiState by viewModel.uiState.observeAsState(UserState())
-    val favouriteDogs by viewModel.favoriteDogs.observeAsState()
+    val user by viewModel.user.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val favouriteDogs by viewModel.favoriteDogs.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -98,10 +102,13 @@ fun UserProfile(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState, Modifier.imePadding())
         }
     ) {
         if (uiState.isAddingUser) {
-            AddUserDialog(state = uiState, onEvent = viewModel::onEvent)
+            AddUserDialog(state = uiState, onEvent = viewModel::onEvent, snackbarHostState)
         }
         if (user == null) {
             Column(
@@ -132,7 +139,7 @@ fun UserProfile(
                     textAlign = TextAlign.Center,
                     color = Color.Black
                 )
-                if (favouriteDogs.isNullOrEmpty()) {
+                if (favouriteDogs.isEmpty()) {
                     Spacer(modifier = Modifier.padding(top = 5.dp))
                     Text(
                         "Your favourite dogs will be displayed here!",
@@ -150,7 +157,7 @@ fun UserProfile(
                             .padding(top = 10.dp),
                         horizontalAlignment = CenterHorizontally
                     ) {
-                        items(favouriteDogs!!) {dogImage ->
+                        items(favouriteDogs) { dogImage ->
                             DogPictureItem(dogImages = dogImage) {
                                 navController.navigate("DogPreview/${dogImage.id}")
                             }

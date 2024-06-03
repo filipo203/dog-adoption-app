@@ -1,5 +1,6 @@
 package com.example.dogadoption.repository
 
+import android.util.Log
 import com.example.dogadoption.room.dogs.DogDao
 import com.example.dogadoption.room.dogs.DogImages
 import com.example.dogadoption.room.dogs.DogNames
@@ -33,12 +34,13 @@ class LocalSource @Inject constructor(
         dogDao.toggleFavourite(dogImage.id, dogImage.isFavourite)
     }
     fun getFavoriteDogImages(): Flow<List<DogImages>> {
+        Log.d("LS", "Getting favourite dogs")
         return dogDao.getFavoriteDogImages()
     }
     suspend fun insertUser(user: User) {
         userDao.insertUser(user)
     }
-    suspend fun getUser(): User? {
+    fun getUser(): Flow<User?> {
         return userDao.getUser()
     }
 }

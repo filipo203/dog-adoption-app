@@ -16,7 +16,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +30,9 @@ import kotlinx.coroutines.launch
 fun AddUserDialog(
     state: UserState,
     onEvent: (UserEvent) -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
@@ -71,9 +70,7 @@ fun AddUserDialog(
                         Text(text = "Save")
                     }
                 }
-            },
+            }
         )
     }
-
-
 }

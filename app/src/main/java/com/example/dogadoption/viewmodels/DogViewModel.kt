@@ -14,6 +14,8 @@ import com.example.dogadoption.room.user.UserEvent
 import com.example.dogadoption.room.user.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,19 +25,19 @@ class DogViewModel @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _dogBreeds = MutableLiveData<List<String>>()
-    val dogBreeds: LiveData<List<String>> get() = _dogBreeds
+    private val _dogBreeds = MutableStateFlow<List<String>>(emptyList())
+    val dogBreeds: StateFlow<List<String>> get() = _dogBreeds
 
     private var dogBreedsFetched = false
 
-    private val _loading = MutableLiveData(false)
+    private val _loading = MutableStateFlow(false)
 
     init {
         saveDogBreeds()
     }
 
     private fun setLoading(loading: Boolean) {
-        _loading.postValue(loading)
+        _loading.value = loading
     }
 
     private fun saveDogBreeds() {
@@ -58,7 +60,7 @@ class DogViewModel @Inject constructor(
                 val breedsFlow = dogRepository.getDogBreeds()
                 breedsFlow.collect { dogNamesList ->
                     val breedNames = dogNamesList.map { it.name }
-                    _dogBreeds.postValue(breedNames)
+                    _dogBreeds.value = breedNames
                     Log.d(
                         "DOGVIEWMODEL",
                         "Dog breeds fetched from database successfully: $breedNames"
@@ -76,7 +78,7 @@ class DogViewModel @Inject constructor(
             try {
                 val searchBreeds = dogRepository.searchDogBreeds(query)
                 val breedNames = searchBreeds.map { it.name }
-                _dogBreeds.postValue(breedNames)
+                _dogBreeds.value = breedNames
             } catch (e: Exception) {
                 Log.e("DOGVIEWMODEL", "Error searching for dogs")
             } finally {

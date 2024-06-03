@@ -25,7 +25,7 @@ class DogRepository @Inject constructor(
         val dogBreeds = localSource.getDogBreeds().firstOrNull()
         if (dogBreeds.isNullOrEmpty()) {
             try {
-                val remoteDogBreeds = remoteSource.getDogBreeds()
+                val remoteDogBreeds = remoteSource.saveDogBreeds()
                 val dogNamesList = remoteDogBreeds.map { DogNames(0, it, "") }
                 localSource.saveDogBreed(dogNamesList)
             } catch (e: Exception) {
@@ -39,7 +39,7 @@ class DogRepository @Inject constructor(
         val dogImageDB = localSource.getDogBreedImages(breed).firstOrNull() ?: emptyList()
         if (dogImageDB.isEmpty()) {
             try {
-                val result = remoteSource.getDogPictures(breed)
+                val result = remoteSource.saveDogPictures(breed)
                 result.onSuccess { dogPictures ->
                     dogPictures.forEach { imageUrl ->
                         if (!dogImageDB.any { it.imageUrls == imageUrl}) {
@@ -67,7 +67,7 @@ class DogRepository @Inject constructor(
     suspend fun insertUser(user: User) {
         return localSource.insertUser(user)
     }
-    suspend fun getUser(): User? {
+    fun getUser(): Flow<User?> {
         return localSource.getUser()
     }
 }

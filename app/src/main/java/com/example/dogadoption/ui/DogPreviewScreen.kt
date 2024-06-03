@@ -1,7 +1,6 @@
 package com.example.dogadoption.ui
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -11,6 +10,7 @@ import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -28,8 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,17 +60,46 @@ fun DogPreviewScreen(
     viewModel: DogPicsViewModel,
     imageId: Int)
 {
-    val allImages by viewModel.dogImageData.observeAsState(emptyList())
-    val favouriteImages by viewModel.favoriteDogs.observeAsState(emptyList())
-    val allDogImages = (allImages + favouriteImages)
-    val dogImage = allDogImages.find { it.id == imageId }
-    val breed = dogImage?.breedName ?: ""
+    val dogImagesData by viewModel.dogImageData.collectAsState()
+    val dogImageData = dogImagesData.find { it.id == imageId }
+    val favouriteImages by viewModel.favoriteDogs.collectAsState()
+    val favouriteDogImage = favouriteImages.find { it.id == imageId }
 
-    LaunchedEffect(Unit) {
-        Log.d(ContentValues.TAG, "Fetching dog pictures for breed: $breed")
+    // for data handling all dogs
+    val allDogImages = (dogImagesData + ((favouriteImages).distinctBy { it.id }))
+    val allDogImage = allDogImages.find { it.id == imageId }
+    val breed = allDogImage?.breedName ?: ""
+
+    LaunchedEffect(breed) {
+        Log.d("DOGPREVIEWSCREEN", "Fetching dog pictures")
+        viewModel.saveDogPictures(breed)
         viewModel.getDogImages(breed)
+        viewModel.favoriteDogs.value
     }
-
+    if (allDogImage == null) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "Error",
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 150.dp)
+            )
+            Button(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(top = 50.dp)
+            ) {
+                Text("Go back")
+            }
+            Log.d(
+                "DOGPREVIEWSCREEN",
+                "NULL: Dog Image: $allDogImage, ${allDogImage?.id} / Dog Data Size: ${dogImagesData.size}")
+        }
+        return
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -103,25 +132,28 @@ fun DogPreviewScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            if (dogImage != null) {
-                                viewModel.toggleFavourite(dogImage)
-                            }
+                            viewModel.toggleFavourite(allDogImage)
                         },
                         modifier = Modifier.pulseClick()
                     ) {
                         Icon(
-                            imageVector = if (dogImage?.isFavourite == true) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            imageVector = if (allDogImage.isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = null,
-                            tint = if (dogImage?.isFavourite == true) Color.Red else Color.Black
+                            tint = if (allDogImage.isFavourite) Color.Red else Color.Black
                         )
                     }
                 }
             )
         }
     ) {
-        dogImage?.let { dog ->
-            DogPicture(dogImages = dog)
+        if (favouriteDogImage == null) {
+            DogPicture(dogImages = dogImageData!!)
+        } else {
+            DogPicture(dogImages = favouriteDogImage)
         }
+        Log.d(
+            "DOGPREVIEWSCREEN",
+            "DogPicture(), Dog Image: $allDogImage / Dog Data Size for dog $breed: ${dogImagesData.size}")
     }
 }
 

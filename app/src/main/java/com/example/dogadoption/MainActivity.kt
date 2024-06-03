@@ -18,11 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DogAdoptionTheme {
-                val navController = rememberNavController()
-                val viewModel = hiltViewModel<DogViewModel>()
-                val picsViewModel = hiltViewModel<DogPicsViewModel>()
-                val userViewModel = hiltViewModel<UserViewModel>()
-                Navigation(navController, viewModel, picsViewModel, userViewModel)
+                Navigation()
             }
         }
     }
