@@ -1,7 +1,7 @@
 # Dog Adoption App Project
 A work in progress of my first app
 
-##[UP TO DATE VERSION OF APP IN BRANCH STAGE-3]
+## [UP TO DATE VERSION OF APP IN BRANCH STAGE-3]
 
 A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the app. This app displays my skills within Jetpack Compose throughout each stage of development:
 
