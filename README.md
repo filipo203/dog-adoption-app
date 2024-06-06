@@ -26,7 +26,7 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 - Building scrollable ui
 - Using local resources
 - Using network images
-- Intent outside of your app
+- Intent outside of app
 - Initiating email creation from your app
 - Giving user temporary feedback using the snackbar
 - Version control
@@ -35,13 +35,13 @@ A prototype of a Dog Adoption App which utilises Dog API to provide dogs for the
 https://dog.ceo/dog-api/
 
 ## Navigation
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Navigation%20(2).png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Navigation%20(2).png)
 
 ## Screenshots
 
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240530_203544.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240530_203605.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240530_203649.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240530_203702.png)
-![alt text](https://github.com/filipo203/dog-adoption-app/blob/stage-3/screenshots/Screenshot_20240530_203728.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240530_203544.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240530_203605.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240530_203649.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240530_203702.png)
+![alt text](https://github.com/filipo203/dog-adoption-app/blob/main/screenshots/Screenshot_20240530_203728.png)
 =======
