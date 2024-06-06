@@ -11,6 +11,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,9 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogadoption.R
+import com.example.dogadoption.viewmodels.UserViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: UserViewModel) {
+    val user by viewModel.user.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -38,6 +43,16 @@ fun HomeScreen(navController: NavController) {
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold
         )
+        if (user != null){
+            Text(
+                "Hello ${user!!.userName}!",
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                fontSize = 24.sp,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Spacer(modifier = Modifier.height(10.dp))
         Text( // TODO: Replace text with logo
             "logo here",
